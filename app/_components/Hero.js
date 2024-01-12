@@ -1,51 +1,40 @@
-import React from 'react'
+'use client'
 
-function Hero() {
+import React, { useState } from "react";
+import Image from 'next/image'
+
+
+const Hero = () => {
   return (
-    <div>
-
-<section
-  className="relative bg-[url(https://cdn.pixabay.com/photo/2019/01/07/03/23/cloud-3918395_960_720.png)] bg-cover bg-center bg-no-repeat"
->
-  <div
-    className="absolute inset-0 bg-white/75 sm:bg-transparent sm:from-white/95 sm:to-white/25 ltr:sm:bg-gradient-to-r rtl:sm:bg-gradient-to-l"
-  ></div>
-
-  <div
-    className="relative mx-auto max-w-screen-xl px-4 py-32 sm:px-6 lg:flex lg:h-screen lg:items-center lg:px-8"
-  >
-    <div className="max-w-xl ltr:sm:text-left rtl:sm:text-right">
-      <h1 className="text-3xl text-white font-extrabold sm:text-5xl">
+    <>
+    <section className="bg-white dark:bg-gray-900 mt-10">
+    <div className="grid ml-10 max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
+        <div className="mr-auto place-self-center lg:col-span-7">
+        <h1 class="text-3xl font-extrabold sm:text-5xl">
         Let us find your
 
-        <strong className="block font-extrabold text-primary"> Forever Home. </strong>
+        <strong class="block font-extrabold text-primary"> Forever Home. </strong>
       </h1>
-
-      <p className="mt-4 max-w-lg sm:text-xl/relaxed text-white">
+      <p class="mt-4 max-w-lg sm:text-xl/relaxed">
         Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nesciunt illo tenetur fuga ducimus
         numquam ea!
       </p>
-
-      <div className="mt-8 flex  flex-wrap gap-4 text-center">
+      <div class="mt-8 flex flex-wrap gap-4 text-center">
         <a
           href="#"
-          className="block w-full rounded bg-primary px-12 py-3 text-sm font-medium text-white shadow hover:bg-blue-700 focus:outline-none focus:ring active:bg-rose-500 sm:w-auto"
+          class="block w-full rounded bg-primary px-12 py-3 text-sm font-medium text-white shadow hover:bg-blue-700 focus:outline-none focus:ring active:bg-blue-500 sm:w-auto"
         >
           Get Started
         </a>
 
-        <a
-          href="#"
-          className="block w-full rounded bg-white px-12 py-3 text-sm font-medium text-blue-600 shadow hover:text-blue-700 focus:outline-none focus:ring active:text-rose-500 sm:w-auto"
-        >
-          Learn More
-        </a>
       </div>
+        </div>
+        <div className=" lg:mt-0 h-96 w-auto lg:col-span-5 lg:flex">
+            <img src={"https://wialon.com/resource/images/wdc/1_pic_test.png"}  />
+        </div>                
     </div>
-  </div>
 </section>
-    </div>
-  )
-}
+     </>
+  )}
 
-export default Hero
+  export default Hero;
