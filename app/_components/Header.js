@@ -5,22 +5,8 @@ import Image from 'next/image'
 import { signInWithGoogle } from './auth'
 
 function Header() {
-  function googleSignIn() {
-    const googleAuthProvider = new GoogleAuthProvider();
-    return signInWithPopup(auth, googleAuthProvider);
-  }
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentuser) => {
-      console.log("Auth", currentuser);
-      setUser(currentuser);
-    });
 
-    return () => {
-      unsubscribe();
-    };
-  }, []);
-  
   return (
     <><header className="bg-white">
     <div className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
