@@ -11,13 +11,12 @@ const Hero = () => {
     <div className="grid ml-10 max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
         <div className="mr-auto place-self-center lg:col-span-7">
         <h1 class="text-3xl font-extrabold sm:text-5xl">
-        Let us find your
+        Store and Share files
 
-        <strong class="block font-extrabold text-primary"> Forever Home. </strong>
+        <strong class="block font-extrabold text-primary"> with ease. </strong>
       </h1>
       <p class="mt-4 max-w-lg sm:text-xl/relaxed">
-        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nesciunt illo tenetur fuga ducimus
-        numquam ea!
+        A Cloud for storing and sharing your data, powered by the Firebase - Firestore.
       </p>
       <div class="mt-8 flex flex-wrap gap-4 text-center">
         <a
