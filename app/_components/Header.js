@@ -1,7 +1,26 @@
+'use client'
+
 import React from 'react'
 import Image from 'next/image'
+import { signInWithGoogle } from './auth'
 
 function Header() {
+  function googleSignIn() {
+    const googleAuthProvider = new GoogleAuthProvider();
+    return signInWithPopup(auth, googleAuthProvider);
+  }
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentuser) => {
+      console.log("Auth", currentuser);
+      setUser(currentuser);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+  
   return (
     <><header className="bg-white">
     <div className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
@@ -30,7 +49,10 @@ function Header() {
           </nav>
   
           <div className="flex items-center gap-4">
-        
+          <div onClick={googleSignIn} class="rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-white shadow sm:flex sm:gap-4">
+           
+              Login
+          </div>
   
             <div className="block md:hidden">
               <button className="rounded bg-gray-100 p-2 text-gray-600 transition hover:text-gray-600/75">
