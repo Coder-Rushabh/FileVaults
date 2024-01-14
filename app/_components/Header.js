@@ -2,10 +2,31 @@
 
 import React from 'react'
 import Image from 'next/image'
-import { signInWithGoogle } from './auth'
+import { UserAuth } from '../context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 function Header() {
+  const {user, googleSignIn, logOut} = UserAuth();
+  const router = useRouter();
 
+  const handleSignIn = async () => {
+
+    try{
+      await googleSignIn();
+      router.push('/vault');
+
+    } catch (error){
+      console.log(error)
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await logOut()
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <><header className="bg-white">
@@ -34,27 +55,53 @@ function Header() {
             </ul>
           </nav>
   
-          <div className="flex items-center gap-4">
-          <div onClick={googleSignIn} class="rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-white shadow sm:flex sm:gap-4">
-           
-              Login
-          </div>
-  
-            <div className="block md:hidden">
-              <button className="rounded bg-gray-100 p-2 text-gray-600 transition hover:text-gray-600/75">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              </button>
-            </div>
-          </div>
+          {!user ? (
+        <div className="flex items-center gap-4">
+        <div onClick={handleSignIn} className="cursor-pointer block rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-700 sm:flex sm:gap-4">
+           Login
+
+        </div>
+
+        <button
+          className="block rounded bg-gray-100 p-2.5 text-gray-600 transition hover:text-gray-600/75 md:hidden"
+        >
+          <span className="sr-only">Toggle menu</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>) : (
+        <div className="flex items-center gap-4">
+          <div className="text-gray-500 transition hover:text-gray-500/75" > </div>
+        <div onClick={handleSignOut} className="cursor-pointer block rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-700 sm:flex sm:gap-4">
+            Logout
+
+        </div>
+
+        <button
+          className="block rounded bg-gray-100 p-2.5 text-gray-600 transition hover:text-gray-600/75 md:hidden"
+        >
+          <span className="sr-only">Toggle menu</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+      )}
         </div>
       </div>
     </div>
