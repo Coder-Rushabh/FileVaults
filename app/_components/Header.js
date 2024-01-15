@@ -27,7 +27,7 @@ function Header() {
       console.log(error);
     }
   }
-
+  console.log(user)
   return (
     <><header className="bg-white">
     <div className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
@@ -79,6 +79,7 @@ function Header() {
         </button>
       </div>) : (
         <div className="flex items-center gap-4">
+          <img class="w-10 h-10 p-1 rounded-full ring-2 ring-gray-300 dark:ring-gray-500" src={user.photoURL} alt="Bordered avatar" />
           <div className="text-gray-500 transition hover:text-gray-500/75" > </div>
         <div onClick={handleSignOut} className="cursor-pointer block rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-700 sm:flex sm:gap-4">
             Logout
