@@ -4,6 +4,7 @@ import React from "react";
 import { useState } from "react";
 import AlertMessage from "./AlertMessage";
 import FilePreview from "./FilePreview";
+import { getStorage, uploadBytesResumable , ref, app} from "firebase/storage"
 
 const Upload = () => {
   const [file, setFile] = useState();
@@ -17,6 +18,20 @@ const Upload = () => {
     }
     setError(null)
     setFile(file)
+    console.log(file);
+  }
+  const storage = getStorage(app)
+  const uploadFile = (file) => {
+    const metadata = {
+      contentType: file.type
+    };
+    const storageRef = ref(storage, 'file-upload/' + file?.name);
+    const uploadTask = uploadBytesResumable(storageRef, file, metadata);
+    uploadTask.on('state_changed',
+    (snapshot) => {
+      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      
+    })
   }
 
 
@@ -51,7 +66,7 @@ const Upload = () => {
               </div>
               {error?  <AlertMessage msg={'Max file size is 2 MB'}/> : null}
                  
-              <button
+              <button onClick={() => uploadFile(file)}
                 disabled={!file}
                 class="mt-4 rounded-full bg-blue-600 px-10 py-2 font-semibold text-white disabled:bg-gray-400 disabled:text-gray-700"
               >
