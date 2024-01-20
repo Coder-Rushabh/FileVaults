@@ -3,6 +3,7 @@ import Image from 'next/image'
 
 
 const FilePreview = ({file, removeFile}) => {
+  console.log(file);
   return (
     <div className='flex items-center justify-between'>
     <div>

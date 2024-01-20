@@ -1,39 +1,44 @@
-"use client"
+"use client";
 
 import React from "react";
 import { useState } from "react";
 import AlertMessage from "./AlertMessage";
 import FilePreview from "./FilePreview";
-import { getStorage, uploadBytesResumable , ref, app} from "firebase/storage"
+import { getStorage, uploadBytesResumable, ref, getDownloadURL } from "firebase/storage";
+import {app} from '../../../firebase'
+import ProgressBar from "./ProgressBar";
 
 const Upload = () => {
+  const [progress, setProgress] = useState(0);
   const [file, setFile] = useState();
   const [error, setError] = useState();
 
-
   const onFileSelect = (file) => {
-    if(file && file.size>2000000){
-      setError('Maximum file upload size is 2MB')
+    if (file && file.size > 2000000) {
+      setError("Maximum file upload size is 2MB");
       return;
     }
-    setError(null)
-    setFile(file)
+    setError(null);
+    setFile(file);
     console.log(file);
-  }
-  const storage = getStorage(app)
+  };
+
+  const storage = getStorage(app);
+
   const uploadFile = (file) => {
     const metadata = {
-      contentType: file.type
+      contentType: file.type,
     };
     const storageRef = ref(storage, 'file-upload/' + file?.name);
-    const uploadTask = uploadBytesResumable(storageRef, file, metadata);
-    uploadTask.on('state_changed',
-    (snapshot) => {
+    const uploadTask = uploadBytesResumable(storageRef, file, file.type);
+    uploadTask.on("state_changed", (snapshot) => {
       const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      
-    })
-  }
-
+      setProgress(progress)
+      progress==100 && getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+        console.log(downloadURL)
+      })
+    });
+  };
 
   return (
     <div>
@@ -46,32 +51,53 @@ const Upload = () => {
             <div className="ml-6 mt-2">Max size 2mb</div>
             <div class="space-y-4 px-8 py-5">
               <div class="flex flex-col items-center justify-center rounded-lg border-4 border-dashed px-4 py-5">
-                {file? <FilePreview file={file} removeFile={() => setFile(null)} /> : <> <img
-                  src={
-                    "https://static.vecteezy.com/system/resources/previews/016/314/855/original/transparent-cloud-file-upload-icon-free-png.png"
-                  }
-                  height={100}
-                  width={100}
-                />
-                
-                <p class="mt-4 text-center text-xl font-medium text-gray-800">
-                  Drop Files here or
-                  <label class="shadow-blue-100 mt-2 block rounded-full border bg-white px-4 py-0.5 font-normal text-blue-500 shadow hover:bg-blue-50">
-                    <input class="hidden" type="file" name="file" id="" onChange={(event) => onFileSelect(event.target.files[0])}/>
-                    browse
-                  </label>
-                </p>
-                </>
-                }
+                {file ? (
+                  <FilePreview file={file} removeFile={() => setFile(null)} />
+                ) : (
+                  <>
+                    {" "}
+                    <img
+                      src={
+                        "https://static.vecteezy.com/system/resources/previews/016/314/855/original/transparent-cloud-file-upload-icon-free-png.png"
+                      }
+                      height={100}
+                      width={100}
+                    />
+                    <p class="mt-4 text-center text-xl font-medium text-gray-800">
+                      Drop Files here or
+                      <label class="shadow-blue-100 mt-2 block rounded-full border bg-white px-4 py-0.5 font-normal text-blue-500 shadow hover:bg-blue-50">
+                        <input
+                          class="hidden"
+                          type="file"
+                          name="file"
+                          id=""
+                          onChange={(event) =>
+                            onFileSelect(event.target.files[0])
+                          }
+                        />
+                        browse
+                      </label>
+                    </p>
+                  </>
+                )}
               </div>
-              {error?  <AlertMessage msg={'Max file size is 2 MB'}/> : null}
-                 
-              <button onClick={() => uploadFile(file)}
+              {error ? <AlertMessage msg={"Max file size is 2 MB"} /> : null}
+
+              
+              {progress>0 ? 
+              
+              <> 
+                <ProgressBar progress={progress} />
+                
+              </> : 
+              
+              <button
+                onClick={() => uploadFile(file)}
                 disabled={!file}
                 class="mt-4 rounded-full bg-blue-600 px-10 py-2 font-semibold text-white disabled:bg-gray-400 disabled:text-gray-700"
               >
                 Submit
-              </button>
+              </button>}
             </div>
           </div>
         </div>
