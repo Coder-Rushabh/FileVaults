@@ -13,7 +13,7 @@ function Header() {
 
     try{
       await googleSignIn();
-      router.push('/vault');
+      router.push('/upload');
 
     } catch (error){
       console.log(error)

@@ -1,14 +1,25 @@
 "use client";
 
 import React from "react";
-import { useState } from "react";
+import { useState, useUser } from "react";
 import AlertMessage from "./AlertMessage";
 import FilePreview from "./FilePreview";
-import { getStorage, uploadBytesResumable, ref, getDownloadURL } from "firebase/storage";
-import {app} from '../../../firebase'
+import {
+  getStorage,
+  uploadBytesResumable,
+  ref,
+  getDownloadURL,
+} from "firebase/storage";
+import { app } from "../../../firebase";
 import ProgressBar from "./ProgressBar";
+import { UserAuth } from "@/app/context/AuthContext";
+import { generateRandomString } from "@/app/_utils/GenerateRandomString";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
 
 const Upload = () => {
+  const { user } = UserAuth();
+  const db = getFirestore(app);
+
   const [progress, setProgress] = useState(0);
   const [file, setFile] = useState();
   const [error, setError] = useState();
@@ -24,20 +35,42 @@ const Upload = () => {
   };
 
   const storage = getStorage(app);
-
   const uploadFile = (file) => {
-    const metadata = {
-      contentType: file.type,
-    };
     const storageRef = ref(storage, 'file-upload/' + file?.name);
     const uploadTask = uploadBytesResumable(storageRef, file, file.type);
-    uploadTask.on("state_changed", (snapshot) => {
-      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      setProgress(progress)
-      progress==100 && getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-        console.log(downloadURL)
-      })
+
+    uploadTask.on("state_changed", async (snapshot) => {
+      try {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setProgress(progress);
+
+        if (progress === 100) {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          console.log("Download URL:", downloadURL);
+        }
+      } catch (error) {
+        console.log("Error during file upload:", error);
+      }
+      await saveInfo(file, downloadURL);
     });
+  };
+
+  const saveInfo = async (file, fileUrl) => {
+    try {
+      const docId = generateRandomString();
+      await setDoc(doc(db, "uploadedFiles", docId), {
+        fileName: file?.name || "",
+        fileSize: file?.size || 0,
+        fileType: file?.type || "",
+        fileUrl: fileUrl || "",
+        id: docId,
+        password: "", // You might want to handle password logic here
+        shortUrl: `http://localhost:3000/${docId}`,
+      });
+    } catch (error) {
+      console.error("Error saving file information:", error);
+      // You might want to handle errors more gracefully, e.g., show a user-friendly message
+    }
   };
 
   return (
@@ -83,21 +116,19 @@ const Upload = () => {
               </div>
               {error ? <AlertMessage msg={"Max file size is 2 MB"} /> : null}
 
-              
-              {progress>0 ? 
-              
-              <> 
-                <ProgressBar progress={progress} />
-                
-              </> : 
-              
-              <button
-                onClick={() => uploadFile(file)}
-                disabled={!file}
-                class="mt-4 rounded-full bg-blue-600 px-10 py-2 font-semibold text-white disabled:bg-gray-400 disabled:text-gray-700"
-              >
-                Submit
-              </button>}
+              {progress > 0 ? (
+                <>
+                  <ProgressBar progress={progress} />
+                </>
+              ) : (
+                <button
+                  onClick={() => uploadFile(file)}
+                  disabled={!file}
+                  class="mt-4 rounded-full bg-blue-600 px-10 py-2 font-semibold text-white disabled:bg-gray-400 disabled:text-gray-700"
+                >
+                  Submit
+                </button>
+              )}
             </div>
           </div>
         </div>
