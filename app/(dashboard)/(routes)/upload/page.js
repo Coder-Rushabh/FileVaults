@@ -47,11 +47,12 @@ const Upload = () => {
         if (progress === 100) {
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
           console.log("Download URL:", downloadURL);
+          await saveInfo(file, downloadURL);
         }
       } catch (error) {
         console.log("Error during file upload:", error);
       }
-      await saveInfo(file, downloadURL);
+      
     });
   };
 
@@ -64,6 +65,8 @@ const Upload = () => {
         fileType: file?.type || "",
         fileUrl: fileUrl || "",
         id: docId,
+        userName: user.displayName,
+        userEmail: user.email,
         password: "", // You might want to handle password logic here
         shortUrl: `http://localhost:3000/${docId}`,
       });
