@@ -1,7 +1,6 @@
 "use client";
 
-import React from "react";
-import { useState, useUser } from "react";
+import React, { useEffect, useState } from "react";
 import AlertMessage from "./AlertMessage";
 import FilePreview from "./FilePreview";
 import {
@@ -15,14 +14,19 @@ import ProgressBar from "./ProgressBar";
 import { UserAuth } from "@/app/context/AuthContext";
 import { generateRandomString } from "@/app/_utils/GenerateRandomString";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { useRouter } from "next/navigation";
+import FileUploaded from "./FileUploaded";
 
 const Upload = () => {
+  const router = useRouter();
   const { user } = UserAuth();
   const db = getFirestore(app);
 
+  const [fileDocId, setFileDocId] = useState(null);
   const [progress, setProgress] = useState(0);
   const [file, setFile] = useState();
   const [error, setError] = useState();
+  const [uploadCompleted, setUploadCompleted] = useState(false);
 
   const onFileSelect = (file) => {
     if (file && file.size > 2000000) {
@@ -36,23 +40,24 @@ const Upload = () => {
 
   const storage = getStorage(app);
   const uploadFile = (file) => {
-    const storageRef = ref(storage, 'file-upload/' + file?.name);
+    const storageRef = ref(storage, "file-upload/" + file?.name);
     const uploadTask = uploadBytesResumable(storageRef, file, file.type);
 
     uploadTask.on("state_changed", async (snapshot) => {
       try {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         setProgress(progress);
 
         if (progress === 100) {
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
           console.log("Download URL:", downloadURL);
+          setUploadCompleted(true);
           await saveInfo(file, downloadURL);
         }
       } catch (error) {
         console.log("Error during file upload:", error);
       }
-      
     });
   };
 
@@ -70,11 +75,20 @@ const Upload = () => {
         password: "", // You might want to handle password logic here
         shortUrl: `http://localhost:3000/${docId}`,
       });
+      setFileDocId(docId);
     } catch (error) {
       console.error("Error saving file information:", error);
       // You might want to handle errors more gracefully, e.g., show a user-friendly message
     }
   };
+
+  useEffect(() => {
+    uploadCompleted &&
+      setTimeout(() => {
+        setUploadCompleted(false);
+        router.push("/file-preview/" + fileDocId);
+      }, 2000);
+  }, [uploadCompleted]);
 
   return (
     <div>
@@ -122,6 +136,7 @@ const Upload = () => {
               {progress > 0 ? (
                 <>
                   <ProgressBar progress={progress} />
+                  {uploadCompleted == true ? <FileUploaded /> : null}
                 </>
               ) : (
                 <button
