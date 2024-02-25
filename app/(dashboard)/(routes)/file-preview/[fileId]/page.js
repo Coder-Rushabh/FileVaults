@@ -3,6 +3,9 @@
 import { app } from "@/app/firebase";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 import React, { useState } from "react";
+import FileInfo from "./FileInfo";
+import FileShareForm from "./FileShareForm";
+import { Link } from "next/navigation";
 
 const FilePreview = ({ params }) => {
   const [file, setFile] = useState();
@@ -18,9 +21,25 @@ const FilePreview = ({ params }) => {
     }
   };
 
+  const onPasswordSave=(password)=>{
+
+  }
+
+
   return (
     <div>
-      <div className="p-4 sm:ml-64">
+      <div className="py-10 px-20">
+        <Link href='/upload' className='flex gap-3'>Go to Upload</Link>
+        <div className="grid grid-cols-1 md:grid-cols-2 mt-5">
+          <FileInfo file={file} />
+          <FileShareForm file={file}
+          onPasswordSave={(password)=>onPasswordSave(password)}/>
+        </div>
+      </div>
+
+
+
+      {/* <div className="p-4 sm:ml-64">
         <div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
           <section>
             <div className="grid grid-cols-1  lg:grid-cols-2">
@@ -110,7 +129,7 @@ const FilePreview = ({ params }) => {
             </div>
           </section>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
